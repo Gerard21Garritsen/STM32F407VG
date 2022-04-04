@@ -40,6 +40,7 @@ int main(void)
 
 void RCC_ClockConfig(void)
 {
+	//reset CFGR and CR registers
 
 
 }
