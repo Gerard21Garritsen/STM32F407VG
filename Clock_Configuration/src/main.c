@@ -57,9 +57,12 @@ void RCC_ClockConfig(void)
 	//enable prefetch, cache memory, management memory and configure wait states to 5
 	FLASH -> ACR |= (uint32_t)(0x0705);
 
+	//enable PWR clock
+	RCC -> APB1ENR |= (uint32_t)(1 << 28);
+
 	//configure PLLCFGR register to reach 168 MHz to AHB bus
-	RCC -> PLLCFGR |= (uint32_t)(168 << 6); //set to 168 PLLN multiply
 	RCC -> PLLCFGR |= (uint32_t)(0x4); //set to 4 PLLM prescaler
+	RCC -> PLLCFGR |= (uint32_t)(168 << 6); //set to 168 PLLN multiply
 	RCC -> PLLCFGR |= (uint32_t)(0x2 << 16); // set PLLP prescaler to 2 to get 168 MHz
 	RCC -> PLLCFGR |= (uint32_t)(0x7 << 24); // set PLLQ prescaler to 7 to get 48 MHz for USB
 	RCC -> PLLCFGR |= (uint32_t)(1 << 22); //select PLL source from HSE clock
@@ -83,7 +86,7 @@ void GPIO_Config(void)
 
 	GPIOD -> MODER |= (uint32_t)(1 << 26); //pin PD13 as output (orange led)
 	GPIOD -> OTYPER &= ~(uint32_t)(1 << 13); //pin PD13 as Push-pull
-	GPIOD -> OSPEEDR |= (uint32_t)(0x0); //pin PD13 with low speed
+	GPIOD -> OSPEEDR |= (uint32_t)(0x3); //pin PD13 with low speed
 
 }
 
