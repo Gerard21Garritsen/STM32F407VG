@@ -3,12 +3,12 @@
  */
 #include "stm32f4xx.h"
 
-#define CPU_FREQ 168000000 //AHB bus speed
+#define CPU_FREQ 168000000 //AHB bus speed is 168 MHz
 
 //configure RCC clock to core works at 168 MHz
 void RCC_ClockConfig(void);
 
-//configure GPIO pins
+//configure pin PD15 (blue Led) as GPIO Output Push-pull
 void GPIO_Config(void);
 
 //configure SysTick timer to overflows each 1 ms
@@ -29,9 +29,9 @@ int main(void)
 
 	while(1)
 	{
-		GPIOD -> BSRRL |= (uint32_t)(1 << 13);
+		GPIOD -> BSRRL |= (uint32_t)(1 << 15);
 		Delay_ms(100);
-		GPIOD -> BSRRH |= (uint32_t)( 1 << 13);
+		GPIOD -> BSRRH |= (uint32_t)( 1 << 15);
 		Delay_ms(100);
 
 
@@ -46,9 +46,9 @@ void RCC_ClockConfig(void)
 {
 	//disable PLL, HSE clocks, reset PLLCFGR and CFGR registers
 	RCC -> CFGR = (uint32_t)(0x0); //switch to HSI clock as main clock
-	RCC -> CR &= ~(uint32_t)(1 << 24);
-	RCC -> CR &= ~(uint32_t)(1 << 16);
-	RCC -> PLLCFGR = (uint32_t)(0x0);
+	RCC -> CR &= ~(uint32_t)(1 << 24); //disable PLL
+	RCC -> CR &= ~(uint32_t)(1 << 16); //disable HSE
+	RCC -> PLLCFGR = (uint32_t)(0x0); //reset PLLCFGR
 
 	//enable HSE clock and wait for it to stabilize
 	RCC -> CR |= (uint32_t)(1 << 16); //turn on HSE clock
@@ -63,7 +63,7 @@ void RCC_ClockConfig(void)
 	//configure PLLCFGR register to reach 168 MHz to AHB bus
 	RCC -> PLLCFGR |= (uint32_t)(0x4); //set to 4 PLLM prescaler
 	RCC -> PLLCFGR |= (uint32_t)(168 << 6); //set to 168 PLLN multiply
-	RCC -> PLLCFGR |= (uint32_t)(0x2 << 16); // set PLLP prescaler to 2 to get 168 MHz
+	RCC -> PLLCFGR |= (uint32_t)(0x0 << 16); // set PLLP prescaler to 2 to get 168 MHz
 	RCC -> PLLCFGR |= (uint32_t)(0x7 << 24); // set PLLQ prescaler to 7 to get 48 MHz for USB
 	RCC -> PLLCFGR |= (uint32_t)(1 << 22); //select PLL source from HSE clock
 
@@ -84,9 +84,9 @@ void GPIO_Config(void)
 {
 	RCC -> AHB1ENR |= (uint32_t)(1 << 3); //enable PORTD clock
 
-	GPIOD -> MODER |= (uint32_t)(1 << 26); //pin PD13 as output (orange led)
-	GPIOD -> OTYPER &= ~(uint32_t)(1 << 13); //pin PD13 as Push-pull
-	GPIOD -> OSPEEDR |= (uint32_t)(0x3); //pin PD13 with low speed
+	GPIOD -> MODER |= (uint32_t)(1 << 30); //pin PD15 as output (goes in pairs)
+	GPIOD -> OTYPER &= ~(uint32_t)(1 << 15); //pin PD12 as Push-pull
+	GPIOD -> OSPEEDR |= (uint32_t)(0x3 << 30); //pin PD15 with High Speed (goes in pairs)
 
 }
 
