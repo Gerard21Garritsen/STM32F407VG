@@ -75,7 +75,7 @@ void Timer6_Initialize(void)
 	//configure timer to overflows each 180 ms
 	TIM6 -> CR1 = (uint16_t)(0x80);
 	TIM6 -> CR2 = (uint16_t)(0x00);
-	TIM6 -> PSC = 128; //set up prescaler
+	TIM6 -> PSC = 127; //set up prescaler (prescaler calculated - 1)
 	TIM6 -> ARR = 11249; //load ARR register
 	TIM6 -> EGR = (uint16_t)(0x1); //enable UG bit
 
